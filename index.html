@@ -311,6 +311,13 @@
   .proj-card li + li{margin-top:8px;}
   .proj-metrics{display:flex; gap:8px; flex-wrap:wrap; margin-top:18px;}
   .proj-card .tags{margin-top:auto; padding-top:18px;}
+  .proj-link{
+    display:inline-flex; align-items:center; gap:6px;
+    font-family:var(--mono); font-size:12.5px; font-weight:600;
+    color:var(--teal); text-decoration:none; margin-top:16px;
+  }
+  .proj-link:hover, .proj-link:focus-visible{color:var(--amber);}
+  .proj-link svg{width:13px; height:13px;}
 
   /* skills */
   .skill-groups{display:grid; grid-template-columns:repeat(2,1fr); gap:28px 40px;}
@@ -542,7 +549,7 @@
         <div class="eyebrow">Projects</div>
         <h2>Things I built on my own time.</h2>
       </div>
-      <p>Independent tools that turn raw, noisy input — logs, comments — into something a team can act on.</p>
+      <p>Independent builds spanning data tooling, DevOps pipelines, and full-stack apps.</p>
     </div>
 
     <div class="proj-grid">
@@ -583,6 +590,48 @@
           <span class="tag">DistilBERT</span>
           <span class="tag">Linux</span>
         </div>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-kicker">DevOps · CI/CD pipeline</div>
+        <h3>Task Manager CI/CD Pipeline</h3>
+        <div class="proj-sub">Node.js · Docker · GitHub Actions</div>
+        <ul>
+          <li>Built a production-style CI/CD pipeline for a Node.js/Express REST API, automating testing, Docker image builds, and container registry publishing with GitHub Actions.</li>
+          <li>Integrated automated dependency installation, test execution, and container vulnerability scanning into the workflow for a secure, repeatable release process.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Node.js</span>
+          <span class="tag">Express.js</span>
+          <span class="tag">Docker</span>
+          <span class="tag">GitHub Actions</span>
+        </div>
+        <a class="proj-link" href="https://github.com/Purvaxx/task-manager-ci-cd/blob/main/README.md" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          View on GitHub
+        </a>
+      </div>
+
+      <div class="proj-card reveal">
+        <div class="proj-kicker">Full-stack web app</div>
+        <h3>Notes WebApp</h3>
+        <div class="proj-sub">Node.js · Express · MongoDB · Passport</div>
+        <ul>
+          <li>Built a full-stack note-taking application with Node.js, Express, and MongoDB, using Passport for user authentication and session handling.</li>
+          <li>Implemented full CRUD operations and search functionality, with EJS templating and Bootstrap for a clean, responsive UI.</li>
+        </ul>
+        <div class="tags">
+          <span class="tag">Node.js</span>
+          <span class="tag">Express.js</span>
+          <span class="tag">MongoDB</span>
+          <span class="tag">Passport</span>
+          <span class="tag">EJS</span>
+          <span class="tag">Bootstrap</span>
+        </div>
+        <a class="proj-link" href="https://github.com/Purvaxx/Notes-WebApp" target="_blank" rel="noopener">
+          <svg viewBox="0 0 16 16" fill="currentColor" aria-hidden="true"><path d="M8 0C3.58 0 0 3.58 0 8a8 8 0 0 0 5.47 7.59c.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8 8 0 0 0 16 8c0-4.42-3.58-8-8-8Z"/></svg>
+          View on GitHub
+        </a>
       </div>
     </div>
   </div>
