@@ -136,6 +136,14 @@
   .fact-card dt{color:var(--muted-2); font-family:var(--mono); font-size:11.5px;}
   .fact-card dd{margin:0; font-weight:600; text-align:right; color:#fff;}
 
+  /* user manual card */
+  .manual-card{border:1px solid var(--line); border-radius:12px; background:var(--card-2); overflow:hidden;}
+  .manual-body{padding:6px 22px 8px;}
+  .manual-row{display:flex; justify-content:space-between; align-items:baseline; gap:16px; padding:14px 0; border-bottom:1px dashed var(--line); font-family:var(--mono); font-size:13.5px;}
+  .manual-row:last-child{border-bottom:none;}
+  .manual-row .key{color:var(--muted); font-size:12px; text-transform:uppercase; letter-spacing:.06em; flex-shrink:0;}
+  .manual-row .val{color:var(--mint-bright); font-weight:500; text-align:right;}
+
   /* what i do bento */
   .do-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:16px;}
   .do-card{background:var(--card); border:1px solid var(--line); border-radius:12px; padding:22px; display:flex; flex-direction:column; gap:10px; transition:border-color .2s, transform .2s;}
@@ -261,7 +269,7 @@
     </div>
     <div class="role-tag">Data Operations Analyst · NielsenIQ</div>
     <h1>Data engineer by trade. <span class="accent">Product thinker</span> by habit.</h1>
-    <p class="hero-sub"> Hello, World. Purva here, turning curiosity into code and "what if?" into "it's live," one commit at a time. </p>
+    <p class="hero-sub">Adios, blank page. I'm Purva — I've lived the full lifecycle: the problem, the prototype, the pipeline, the push to production, the pager at 2 a.m. New stack, new tools, same ending — it works, it holds, it ships. Now writing the next chapter in platform or product.</p>
     <div class="city-row">
       <span class="city-chip">CHENNAI</span>
       <span class="city-chip">BENGALURU</span>
@@ -282,7 +290,7 @@
       </div>
       <div class="term-body">
         <div class="term-line"><span class="prompt">$</span><span class="cmd">whoami</span></div>
-        <div class="term-out">Data Operations Analyst, NielsenIQ · MCA (AI/ML), VIT</div>
+        <div class="term-out">Data Operations Analyst, NielsenIQ · MCA (AI/ML), VIT — in progress</div>
         <div class="term-line"><span class="prompt">$</span><span class="cmd">status --open-to</span></div>
         <div class="term-out">Data Engineering · Platform · Product roles</div>
         <div class="term-line"><span class="prompt">$</span><span class="cmd">location --target</span></div>
@@ -299,16 +307,28 @@
   <div class="wrap about-grid">
     <div class="reveal">
       <div class="eyebrow">About</div>
-      <h2 style="font-size:26px; margin-bottom:18px;">Adapts fast, ships faster.</h2>
-      <p>I'm a Data Operations Analyst at NielsenIQ, where I own end-to-end pipeline operations for enterprise FMCG clients including Mars, Mondelez, and Bush Brothers. That means Python/SQL ETL pipelines running at 99.8% data accuracy, 100% SLA compliance, and being the first point of contact when a US-based client needs something fixed, fast, using ITIL practice and AI-assisted tooling.</p>
-      <p>Outside client work, I build things that make data legible: a fine-tuned sentiment model, a production-style CI/CD pipeline, and systems-level Java projects just to understand what's actually happening under the abstraction. I'm finishing my Master's in AI/ML at VIT, and I spent undergrad running a 100+ member tech club as VP and President, which is where the product half of my brain got its training.</p>
+      <h2 style="font-size:26px; margin-bottom:18px;">User Manual: Purva v1.0</h2>
+      <div class="manual-card">
+        <div class="term-bar">
+          <span class="term-dot r"></span><span class="term-dot a"></span><span class="term-dot g"></span>
+          <span class="term-title">purva.manual — read-only</span>
+        </div>
+        <div class="manual-body">
+          <div class="manual-row"><span class="key">Default setting</span><span class="val">Curious</span></div>
+          <div class="manual-row"><span class="key">Favorite command</span><span class="val">"What if?"</span></div>
+          <div class="manual-row"><span class="key">Learns</span><span class="val">By building</span></div>
+          <div class="manual-row"><span class="key">Debugs</span><span class="val">By breaking things first</span></div>
+          <div class="manual-row"><span class="key">Collects</span><span class="val">Ideas that become projects</span></div>
+          <div class="manual-row"><span class="key">Ships</span><span class="val">More than excuses</span></div>
+        </div>
+      </div>
     </div>
     <div class="fact-card reveal">
       <dl>
         <div class="row"><dt>ROLE</dt><dd>Data Operations Analyst</dd></div>
         <div class="row"><dt>COMPANY</dt><dd>NielsenIQ</dd></div>
         <div class="row"><dt>BASE</dt><dd>Chennai, India</dd></div>
-        <div class="row"><dt>EDUCATION</dt><dd>M.C.A. AI/ML, VIT Chennai</dd></div>
+        <div class="row"><dt>EDUCATION</dt><dd>M.C.A. AI/ML, VIT Chennai (ongoing)</dd></div>
         <div class="row"><dt>LANGUAGES</dt><dd>Tamil, English, Hindi</dd></div>
         <div class="row"><dt>TARGETING</dt><dd>Chennai · Bengaluru · Hyderabad · Mumbai</dd></div>
       </dl>
@@ -404,7 +424,7 @@
     <div class="section-head reveal">
       <div>
         <div class="eyebrow">Projects</div>
-        <h2>Featured Projects</h2>
+        <h2>Things I built on my own time.</h2>
       </div>
       <p>Independent builds spanning ML, DevOps, and systems-level engineering.</p>
     </div>
@@ -521,9 +541,9 @@
     </div>
     <div class="edu-grid">
       <div class="edu-card reveal">
-        <div class="deg">Master of Computer Applications — AI/ML</div>
+        <div class="deg">Master of Computer Applications — AI/ML <span style="color:var(--mint); font-family:var(--mono); font-size:11px; font-weight:600; text-transform:uppercase; letter-spacing:.05em;">· In Progress</span></div>
         <div class="school">Vellore Institute of Technology (VIT), Chennai</div>
-        <div class="meta">Aug 2025 — Jul 2027 · CGPA 7.8</div>
+        <div class="meta">Aug 2025 — Jul 2027 (expected) · CGPA 7.8</div>
       </div>
       <div class="edu-card reveal">
         <div class="deg">Bachelor of Computer Applications</div>
