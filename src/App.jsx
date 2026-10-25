@@ -201,8 +201,7 @@ function Projects({ projects }) {
       <div className="wrap">
         <div className="head-row">
           <div>
-            <p className="eyebrow">Projects</p>
-            <h2 className="h2">Selected work from GitHub</h2>
+            <h2 className="h2">Projects</h2>
           </div>
           <a className="btn btn-ghost" href={`${profile.github}?tab=repositories`} target="_blank" rel="noreferrer">
             All repositories ↗
