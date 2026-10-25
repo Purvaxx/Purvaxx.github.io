@@ -2,15 +2,13 @@ export const GITHUB_USER = 'Purvaxx';
 
 export const profile = {
   name: 'Purva A',
-  title: 'Data & ML Engineer',
   role: 'Data Operations Analyst at NielsenIQ',
   email: 'purvaa0130@gmail.com',
   phone: '+91 95660 20082',
   github: 'https://github.com/Purvaxx',
   linkedin: 'https://linkedin.com/in/purva-a-0130x',
   location: 'Chennai, India',
-  summary:
-    'I build data pipelines, machine-learning models and full-stack applications. At NielsenIQ I run production ETL for global FMCG brands; outside work I build forecasting, fraud-analytics and decisioning systems.',
+  summary: ['I build, break, and figure things out.', 'Exploring software, AI, and the systems behind the screen.'],
   about: [
     'I am a Data Operations Analyst at NielsenIQ, where I own end-to-end pipeline operations for enterprise clients such as Mars, Mondelez and Bush Brothers. I am also completing an MCA in AI/ML at VIT Chennai.',
     'My work sits where data engineering meets applied machine learning: reliable ETL, model development, and the tooling that puts both in front of users.',
