@@ -267,12 +267,6 @@ function Education() {
             </span>
           </motion.div>
         ))}
-        <p className="eyebrow cert-label">Certifications</p>
-        <div className="certs">
-          {certifications.map((c) => (
-            <span key={c}>{c}</span>
-          ))}
-        </div>
       </div>
       <div>
         <p className="eyebrow">Recognition</p>
@@ -286,6 +280,35 @@ function Education() {
             </motion.li>
           ))}
         </ul>
+      </div>
+    </section>
+  );
+}
+
+function Certifications() {
+  return (
+    <section className="section wrap" id="certifications">
+      <div className="head-row">
+        <div>
+          <p className="eyebrow">Certifications & courses</p>
+          <h2 className="h2">Continuous learning</h2>
+        </div>
+        <p className="cert-count">{certifications.length} certifications and courses</p>
+      </div>
+      <div className="cert-grid">
+        {certifications.map(([title, provider], i) => (
+          <motion.div
+            className="cert"
+            key={title}
+            initial={{ opacity: 0, y: 24 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ type: 'spring', stiffness: 140, damping: 20, delay: (i % 3) * 0.05 }}
+          >
+            <span className="cert-provider">{provider}</span>
+            <p>{title}</p>
+          </motion.div>
+        ))}
       </div>
     </section>
   );
@@ -332,6 +355,7 @@ export default function App() {
         <Projects projects={projects} />
         <Experience />
         <Education />
+        <Certifications />
         <Contact />
       </main>
     </>

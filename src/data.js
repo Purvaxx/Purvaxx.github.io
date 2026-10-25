@@ -196,4 +196,23 @@ export const achievements = [
   ['Leadership', 'President, HASH Club (100+ members); Rotaractor of the Year; Star of Rotaract, RI District 3234', '2024–25'],
 ];
 
-export const certifications = ['Java — Udemy', 'React — Udemy', 'Flutter & Dart — Udemy', 'JavaScript — Udemy', 'MongoDB — MongoDB University', 'AWS Fundamentals — Coursera'];
+export const certifications = [
+  ['React — The Complete Guide 2025', 'Udemy'],
+  ['The Complete JavaScript Course', 'Udemy'],
+  ['Java for Programmers Crash Course', 'Udemy'],
+  ['Flutter & Dart — The Complete Guide (2024 Edition)', 'Udemy'],
+  ['Introduction to MongoDB', 'MongoDB'],
+  ['AWS', 'Coursera'],
+  ['Microsoft Azure', 'Udemy'],
+  ['Basics of Python Programming', 'Openweaver'],
+  ['C++ Tutorial', 'Great Learning'],
+  ['Front-end Development — HTML', 'Great Learning'],
+  ['Web Design for Beginners (HTML & CSS)', 'Udemy'],
+  ['UI/UX & Figma', 'Udemy'],
+  ['Canva Master Course', 'Udemy'],
+  ['Microsoft Excel', 'Udemy'],
+  ['The Complete Digital Marketing Course (12 courses in 1)', 'Udemy'],
+  ['ChatGPT Masterclass', 'Udemy'],
+  ['ChatGPT Complete Guide', 'Udemy'],
+  ['ChatGPT & AI Tools to Save 2 Hours Daily (Workshop)', 'SRM Ramapuram'],
+];

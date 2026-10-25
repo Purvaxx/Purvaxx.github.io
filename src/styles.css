@@ -202,9 +202,13 @@ img, svg { display: block; }
 .edu-card h4 { font-family: var(--display); font-size: 18px; margin: 0 0 6px; }
 .edu-card p { margin: 0 0 6px; color: #dedee6; }
 .edu-card span { color: var(--muted); font-size: 14px; }
-.cert-label { margin-top: 30px; }
-.certs { display: flex; flex-wrap: wrap; gap: 8px; }
-.certs span { font-size: 13px; padding: 8px 12px; border-radius: 999px; background: var(--surface); border: 1px solid var(--line); color: #c5c5cf; }
+.cert-count { color: var(--muted); margin: 0 0 24px; }
+.cert-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(270px, 1fr)); gap: 14px; margin-top: 20px; }
+.cert { position: relative; padding: 18px 20px 18px 22px; border-radius: 18px; background: var(--surface); border: 1px solid var(--line); overflow: hidden; transition: border-color .2s, transform .2s; }
+.cert::before { content: ''; position: absolute; left: 0; top: 16px; bottom: 16px; width: 3px; border-radius: 3px; background: linear-gradient(#7b61ff, #4cc9f0); }
+.cert:hover { border-color: #4a4a55; transform: translateY(-3px); }
+.cert-provider { font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); }
+.cert p { margin: 6px 0 0; color: #e4e4ea; font-weight: 500; line-height: 1.45; }
 .ach { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--line); }
 .ach li { display: grid; grid-template-columns: 100px 1fr auto; gap: 16px; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--line); }
 .ach-type { font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .1em; color: var(--accent); }
