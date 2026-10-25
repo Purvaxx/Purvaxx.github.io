@@ -1,9 +1,8 @@
-import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
-import { Float, RoundedBox, ContactShadows } from '@react-three/drei';
+import { useMemo, useRef } from 'react';
+import { Canvas, useFrame, useThree } from '@react-three/fiber';
+import { Float, RoundedBox } from '@react-three/drei';
 import * as THREE from 'three';
 
-// Shared pointer so the mascot looks at the cursor anywhere on the page.
 const pointer = { x: 0, y: 0 };
 if (typeof window !== 'undefined') {
   window.addEventListener('pointermove', (e) => {
@@ -12,126 +11,157 @@ if (typeof window !== 'undefined') {
   });
 }
 
-function Eye({ position }) {
-  const pupil = useRef();
-  useFrame(() => {
-    if (!pupil.current) return;
-    pupil.current.position.x = THREE.MathUtils.lerp(pupil.current.position.x, pointer.x * 0.09, 0.15);
-    pupil.current.position.y = THREE.MathUtils.lerp(pupil.current.position.y, pointer.y * 0.09 - 0.02, 0.15);
-  });
-  return (
-    <group position={position}>
-      <mesh scale={[1, 1, 0.55]}>
-        <sphereGeometry args={[0.24, 32, 32]} />
-        <meshStandardMaterial color="#fff" roughness={0.25} />
-      </mesh>
-      <mesh scale={[1.08, 1.08, 0.5]} position={[0, 0, -0.01]}>
-        <sphereGeometry args={[0.24, 32, 32]} />
-        <meshStandardMaterial color="#111" />
-      </mesh>
-      <mesh ref={pupil} position={[0, 0, 0.13]} scale={[1, 1, 0.4]}>
-        <sphereGeometry args={[0.11, 24, 24]} />
-        <meshStandardMaterial color="#0b0b0b" roughness={0.1} />
-      </mesh>
-    </group>
-  );
+// A perspective "room" of grid lines: floor, back wall, side walls and ceiling.
+function GridRoom() {
+  const group = useMemo(() => {
+    const g = new THREE.Group();
+    const mk = () => {
+      const h = new THREE.GridHelper(24, 24, '#34343f', '#24242c');
+      h.material.transparent = true;
+      h.material.opacity = 0.9;
+      return h;
+    };
+    const floor = mk();
+    floor.position.set(0, -3, -6);
+    const back = mk();
+    back.rotation.x = Math.PI / 2;
+    back.position.set(0, 4, -18);
+    const left = mk();
+    left.rotation.z = Math.PI / 2;
+    left.position.set(-12, 4, -6);
+    const right = mk();
+    right.rotation.z = Math.PI / 2;
+    right.position.set(12, 4, -6);
+    const ceil = mk();
+    ceil.position.set(0, 11, -6);
+    g.add(floor, back, left, right, ceil);
+    return g;
+  }, []);
+  return <primitive object={group} />;
 }
 
-function Mascot() {
-  const group = useRef();
-  const blink = useRef(0);
-  const eyes = useRef();
-  useFrame((state) => {
-    const t = state.clock.elapsedTime;
-    if (group.current) {
-      group.current.rotation.y = THREE.MathUtils.lerp(group.current.rotation.y, pointer.x * 0.45, 0.06);
-      group.current.rotation.x = THREE.MathUtils.lerp(group.current.rotation.x, -pointer.y * 0.2, 0.06);
-      group.current.position.y = Math.sin(t * 1.6) * 0.08 - 0.15;
-      const s = 1 + Math.sin(t * 3.2) * 0.012;
-      group.current.scale.set(1 / s, s, 1);
-    }
-    // blink every ~3.5s
-    blink.current = (t % 3.5) < 0.12 ? 0.1 : 1;
-    if (eyes.current) eyes.current.scale.y = THREE.MathUtils.lerp(eyes.current.scale.y, blink.current, 0.5);
-  });
-  const yellow = '#ffc53d';
-  return (
-    <group ref={group}>
-      <RoundedBox args={[1.9, 1.7, 1.2]} radius={0.32} smoothness={6}>
-        <meshStandardMaterial color={yellow} roughness={0.35} />
-      </RoundedBox>
-      {[-0.66, -0.22, 0.22, 0.66].map((x) => (
-        <mesh key={x} position={[x, 0.82, 0]} scale={[1, 0.85, 1.3]}>
-          <sphereGeometry args={[0.27, 32, 32]} />
-          <meshStandardMaterial color={yellow} roughness={0.35} />
-        </mesh>
-      ))}
-      <group ref={eyes} position={[0, 0.15, 0.6]}>
-        <Eye position={[-0.36, 0, 0]} />
-        <Eye position={[0.36, 0, 0]} />
-      </group>
-      {/* smile */}
-      <mesh position={[0, -0.32, 0.6]} rotation={[0, 0, Math.PI]}>
-        <torusGeometry args={[0.16, 0.035, 12, 32, Math.PI]} />
-        <meshStandardMaterial color="#111" />
-      </mesh>
-      {/* cheeks */}
-      {[-0.62, 0.62].map((x) => (
-        <mesh key={x} position={[x, -0.2, 0.58]} scale={[1, 0.6, 0.3]}>
-          <sphereGeometry args={[0.11, 16, 16]} />
-          <meshStandardMaterial color="#ff8a5c" roughness={0.6} />
-        </mesh>
-      ))}
-      {/* little hands */}
-      {[-1.02, 1.02].map((x) => (
-        <mesh key={x} position={[x, -0.25, 0.2]} rotation={[0, 0, x > 0 ? -0.5 : 0.5]}>
-          <capsuleGeometry args={[0.12, 0.25, 8, 16]} />
-          <meshStandardMaterial color="#f2b021" roughness={0.4} />
-        </mesh>
-      ))}
-    </group>
-  );
+function Glossy({ color, ...props }) {
+  return <meshPhysicalMaterial color={color} roughness={0.18} metalness={0.1} clearcoat={1} clearcoatRoughness={0.15} {...props} />;
 }
 
-function Shape({ position, color, kind, speed = 1, scale = 1 }) {
+function Spin({ children, speed = 0.3, ...props }) {
   const ref = useRef();
   useFrame((_, d) => {
-    if (ref.current) {
-      ref.current.rotation.x += d * 0.4 * speed;
-      ref.current.rotation.y += d * 0.6 * speed;
-    }
+    ref.current.rotation.x += d * speed * 0.6;
+    ref.current.rotation.y += d * speed;
   });
-  const geo = {
-    torus: <torusGeometry args={[0.35, 0.15, 24, 48]} />,
-    ico: <icosahedronGeometry args={[0.38, 0]} />,
-    capsule: <capsuleGeometry args={[0.18, 0.45, 8, 16]} />,
-    cone: <coneGeometry args={[0.32, 0.6, 4]} />,
-    knot: <torusKnotGeometry args={[0.25, 0.09, 96, 16]} />,
-  }[kind];
   return (
-    <Float speed={2 * speed} rotationIntensity={0.6} floatIntensity={1.4}>
-      <mesh ref={ref} position={position} scale={scale}>
-        {geo}
-        <meshStandardMaterial color={color} roughness={0.3} metalness={0.05} />
-      </mesh>
-    </Float>
+    <group ref={ref} {...props}>
+      {children}
+    </group>
   );
 }
 
-export default function Scene() {
+function Objects() {
+  const { size } = useThree();
+  if (size.width < 700) return <CompactObjects />;
   return (
-    <Canvas dpr={[1, 2]} camera={{ position: [0, 0, 7.2], fov: 40 }} gl={{ antialias: true, alpha: true }}>
-      <ambientLight intensity={0.9} />
-      <hemisphereLight args={["#fff6e0", "#2a1f3d", 0.8]} />
-      <directionalLight position={[3, 5, 4]} intensity={1.6} />
-      <directionalLight position={[-4, -2, 2]} intensity={0.5} color="#c58cff" />
-      <Mascot />
-      <Shape kind="torus" position={[-2.3, 1.2, -0.5]} color="#c58cff" />
-      <Shape kind="ico" position={[2.4, 1.3, -0.8]} color="#ff6a1a" speed={0.8} />
-      <Shape kind="capsule" position={[2.2, -1.3, 0]} color="#5ec8ff" speed={1.2} />
-      <Shape kind="cone" position={[-2.2, -1.2, 0.2]} color="#ff5d8f" speed={0.9} />
-      <Shape kind="knot" position={[0.2, 2.0, -1.5]} color="#3ddc97" speed={0.6} scale={0.8} />
-      <ContactShadows position={[0, -1.35, 0]} opacity={0.5} scale={8} blur={2.6} far={3} />
+    <>
+      <Float speed={1.4} floatIntensity={1.2} rotationIntensity={0.4}>
+        <Spin position={[-5.2, 1.4, -2]} speed={0.25}>
+          <RoundedBox args={[1.1, 1.1, 1.1]} radius={0.18} smoothness={5}>
+            <Glossy color="#ffc145" />
+          </RoundedBox>
+        </Spin>
+      </Float>
+      <Float speed={1.1} floatIntensity={1.4}>
+        <Spin position={[7.4, 0.6, -3]} speed={0.35}>
+          <mesh>
+            <torusGeometry args={[0.7, 0.26, 32, 64]} />
+            <Glossy color="#7b61ff" />
+          </mesh>
+        </Spin>
+      </Float>
+      <Float speed={1.6} floatIntensity={1}>
+        <Spin position={[4.6, -0.6, -1]} speed={0.4}>
+          <mesh>
+            <octahedronGeometry args={[0.6, 0]} />
+            <Glossy color="#ff6b6b" flatShading />
+          </mesh>
+        </Spin>
+      </Float>
+      <Float speed={1.3} floatIntensity={1.3}>
+        <mesh position={[-4.4, -0.8, -1.5]}>
+          <sphereGeometry args={[0.55, 48, 48]} />
+          <Glossy color="#4cc9f0" />
+        </mesh>
+      </Float>
+      <Float speed={0.9} floatIntensity={1}>
+        <Spin position={[-8, 3.4, -6]} speed={0.2}>
+          <mesh>
+            <torusKnotGeometry args={[0.45, 0.14, 128, 16]} />
+            <Glossy color="#2ed3a8" />
+          </mesh>
+        </Spin>
+      </Float>
+      <Float speed={1} floatIntensity={1.2}>
+        <Spin position={[6.2, 5, -7]} speed={0.3}>
+          <mesh>
+            <icosahedronGeometry args={[0.55, 0]} />
+            <Glossy color="#ff7eb6" flatShading />
+          </mesh>
+        </Spin>
+      </Float>
+    </>
+  );
+}
+
+// Phones: fewer, smaller shapes kept away from the headline.
+function CompactObjects() {
+  return (
+    <>
+      <Float speed={1.2} floatIntensity={0.8}>
+        <Spin position={[-2.3, -1.6, -2]} speed={0.3} scale={0.7}>
+          <RoundedBox args={[1.1, 1.1, 1.1]} radius={0.18} smoothness={5}>
+            <Glossy color="#ffc145" />
+          </RoundedBox>
+        </Spin>
+      </Float>
+      <Float speed={1.1} floatIntensity={0.8}>
+        <Spin position={[2.4, -1.4, -2]} speed={0.35} scale={0.6}>
+          <mesh>
+            <torusGeometry args={[0.7, 0.26, 32, 64]} />
+            <Glossy color="#7b61ff" />
+          </mesh>
+        </Spin>
+      </Float>
+    </>
+  );
+}
+
+// Dolly in on load, then drift with the pointer for parallax.
+function CameraRig() {
+  const { camera } = useThree();
+  const start = useRef(null);
+  useFrame((state) => {
+    if (start.current === null) start.current = state.clock.elapsedTime;
+    const t = Math.min((state.clock.elapsedTime - start.current) / 2.2, 1);
+    const ease = 1 - Math.pow(1 - t, 3);
+    camera.position.x = THREE.MathUtils.lerp(camera.position.x, pointer.x * 0.8, 0.04);
+    camera.position.y = THREE.MathUtils.lerp(camera.position.y, 0.6 + pointer.y * 0.4, 0.04);
+    camera.position.z = THREE.MathUtils.lerp(16, 9, ease);
+    camera.lookAt(0, 0.6, -4);
+  });
+  return null;
+}
+
+export default function Scene({ active = true }) {
+  return (
+    <Canvas frameloop={active ? 'always' : 'never'} dpr={[1, 1.75]} camera={{ position: [0, 0.6, 16], fov: 50 }} gl={{ antialias: true, alpha: true }}>
+      <fog attach="fog" args={['#0d0d10', 9, 26]} />
+      <ambientLight intensity={0.6} />
+      <hemisphereLight args={['#ffffff', '#1a1a22', 0.7]} />
+      <directionalLight position={[4, 6, 6]} intensity={2} />
+      <pointLight position={[-6, 2, 2]} intensity={30} color="#7b61ff" />
+      <pointLight position={[6, -1, 2]} intensity={20} color="#4cc9f0" />
+      <GridRoom />
+      <Objects />
+      <CameraRig />
     </Canvas>
   );
 }

@@ -1,123 +1,216 @@
-import { lazy, Suspense, useState } from 'react';
-import { motion } from 'framer-motion';
-import Intro from './components/Intro.jsx';
-import Marquee from './components/Marquee.jsx';
-import Projects from './components/Projects.jsx';
-import { BlobSticker, GhostSticker, StarSticker, Sparkle } from './components/Stickers.jsx';
-import { profile, manual, whatIDo, experience, education, awards, certifications } from './data.js';
+import { lazy, Suspense, useEffect, useRef, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import Stack from './components/Marquee.jsx';
+import { FanCard, GridCard } from './components/ProjectCard.jsx';
+import { useProjects } from './useProjects.js';
+import { Icon } from './icons.jsx';
+import photo from './assets/photo.webp';
+import { profile, experience, education, achievements, certifications } from './data.js';
 
 const Scene = lazy(() => import('./components/Scene.jsx'));
 
 const rise = {
-  initial: { opacity: 0, y: 40 },
+  initial: { opacity: 0, y: 36 },
   whileInView: { opacity: 1, y: 0 },
   viewport: { once: true, margin: '-80px' },
-  transition: { type: 'spring', stiffness: 120, damping: 18 },
+  transition: { type: 'spring', stiffness: 110, damping: 20 },
 };
+
+function useWidth() {
+  const [w, setW] = useState(() => (typeof window === 'undefined' ? 1200 : window.innerWidth));
+  useEffect(() => {
+    const on = () => setW(window.innerWidth);
+    window.addEventListener('resize', on);
+    return () => window.removeEventListener('resize', on);
+  }, []);
+  return w;
+}
+
+function Loader({ onDone }) {
+  const [show, setShow] = useState(true);
+  useEffect(() => {
+    const t = setTimeout(() => setShow(false), 1500);
+    return () => clearTimeout(t);
+  }, []);
+  return (
+    <AnimatePresence onExitComplete={onDone}>
+      {show && (
+        <motion.div className="loader" exit={{ opacity: 0, scale: 1.04 }} transition={{ duration: 0.5, ease: 'easeInOut' }}>
+          <motion.div
+            className="loader-mark"
+            initial={{ rotateY: -90, opacity: 0 }}
+            animate={{ rotateY: 0, opacity: 1 }}
+            transition={{ duration: 0.8, ease: [0.2, 0.8, 0.2, 1] }}
+          >
+            PA
+          </motion.div>
+          <div className="loader-bar">
+            <motion.span initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} transition={{ duration: 1.3, ease: 'easeInOut' }} />
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
 
 function Nav() {
   return (
     <header className="nav">
-      <a href="#hero" className="logo">
-        <span className="logo-dot" /> purva<span className="dim">.dev</span>
-      </a>
       <nav className="nav-links">
         <a href="#about">About</a>
-        <a href="#skills">Stack</a>
         <a href="#projects">Projects</a>
         <a href="#experience">Experience</a>
+        <a href="#contact">Contact</a>
       </nav>
-      <a className="btn btn-yellow btn-sm" href={`mailto:${profile.email}`}>
-        Say hi
+      <a href="#top" className="mark" aria-label="Purva A — home">
+        PA
       </a>
+      <div className="nav-right">
+        <a className="icon-btn" href={profile.github} target="_blank" rel="noreferrer" aria-label="GitHub">
+          <Icon name="siGithub" size={18} color="#fff" />
+        </a>
+        <a className="nav-cta" href={`mailto:${profile.email}`}>
+          Get in touch
+        </a>
+        <a href="#about" className="avatar" aria-label="About Purva">
+          <img src={photo} alt="" />
+        </a>
+      </div>
     </header>
   );
 }
 
-function Hero({ ready }) {
-  const words = ['Many', 'stacks.', 'One', 'curious', 'mind.'];
+function useOnScreen(ref) {
+  const [on, setOn] = useState(true);
+  useEffect(() => {
+    if (!ref.current || !('IntersectionObserver' in window)) return;
+    const io = new IntersectionObserver(([e]) => setOn(e.isIntersecting));
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, [ref]);
+  return on;
+}
+
+function Hero({ ready, featured }) {
+  const w = useWidth();
+  const ref = useRef(null);
+  const visible = useOnScreen(ref);
+  const cards = featured.slice(0, w < 700 ? 3 : 5);
+  const mid = (cards.length - 1) / 2;
+  const spread = w < 700 ? 92 : w < 1100 ? 180 : 238;
   return (
-    <section className="hero" id="hero">
-      <div className="grid-floor" aria-hidden />
+    <section className="hero" id="top" ref={ref}>
+      <div className="hero-bg">
+        <Suspense fallback={null}>{ready && <Scene active={visible} />}</Suspense>
+      </div>
       <div className="hero-copy">
-        <motion.p className="pill" initial={{ opacity: 0, y: 10 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.1 }}>
+        <motion.p className="pill" initial={{ opacity: 0, y: 12 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.2 }}>
           <span className="pulse" /> {profile.role}
         </motion.p>
         <h1 className="h1">
-          {words.map((w, i) => (
-            <motion.span
-              key={w}
-              className={`word ${i === 1 ? 'hl hl-yellow' : ''} ${i === 4 ? 'hl hl-purple' : ''}`}
-              initial={{ y: 80, opacity: 0, rotate: 6 }}
-              animate={ready ? { y: 0, opacity: 1, rotate: 0 } : {}}
-              transition={{ type: 'spring', stiffness: 160, damping: 14, delay: 0.15 + i * 0.07 }}
-            >
-              {w}
-            </motion.span>
+          {['Purva A', profile.title].map((line, i) => (
+            <span className="line" key={line}>
+              <motion.span
+                initial={{ y: '110%' }}
+                animate={ready ? { y: 0 } : {}}
+                transition={{ duration: 0.9, ease: [0.2, 0.8, 0.2, 1], delay: 0.3 + i * 0.12 }}
+              >
+                {line}
+              </motion.span>
+            </span>
           ))}
         </h1>
-        <motion.p className="lede" initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 0.6 }}>
-          {profile.intro}
+        <motion.p className="hero-sub" initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 0.75 }}>
+          {profile.summary}
         </motion.p>
-        <motion.div className="hero-cta" initial={{ opacity: 0, y: 16 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.75 }}>
-          <a className="btn btn-yellow" href="#projects">See projects</a>
-          <a className="btn btn-dark" href={profile.github} target="_blank" rel="noreferrer">GitHub ↗</a>
-          <a className="btn btn-dark" href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn ↗</a>
+        <motion.div className="cta-row" initial={{ opacity: 0, y: 12 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.9 }}>
+          <a className="btn btn-primary" href="#projects">
+            View projects
+          </a>
+          <a className="btn btn-ghost" href={profile.linkedin} target="_blank" rel="noreferrer">
+            <Icon name="siLinkedin" size={15} color="currentColor" /> LinkedIn
+          </a>
         </motion.div>
-        <div className="stats">
-          {profile.stats.map(([n, l], i) => (
-            <motion.div
-              className="stat"
-              key={l}
-              initial={{ opacity: 0, scale: 0.6 }}
-              animate={ready ? { opacity: 1, scale: 1 } : {}}
-              transition={{ type: 'spring', delay: 0.9 + i * 0.1 }}
-            >
-              <b>{n}</b>
-              <span>{l}</span>
-            </motion.div>
-          ))}
-        </div>
       </div>
-      <div className="hero-3d">
-        <Suspense fallback={<div className="scene-fallback"><BlobSticker size={200} /></div>}>
-          <Scene />
-        </Suspense>
-        <span className="hint">psst — I follow your cursor</span>
+
+      <div className="fan" style={{ '--n': cards.length }}>
+        {cards.map((p, i) => {
+          const d = i - mid;
+          return (
+            <FanCard
+              key={p.key}
+              p={p}
+              style={{ zIndex: 10 - Math.abs(Math.round(d)) }}
+              initial={{ x: 0, y: 420, rotate: 0, opacity: 0 }}
+              animate={ready ? { x: d * spread, y: Math.abs(d) * (w < 700 ? 22 : 38), rotate: d * 7, opacity: 1, scale: d === 0 ? 1.06 : 1 } : {}}
+              whileHover={{ y: Math.abs(d) * 20 - 36, rotate: d * 3, scale: 1.08, zIndex: 20 }}
+              transition={{ type: 'spring', stiffness: 90, damping: 16, delay: ready ? 0.5 + Math.abs(d) * 0.12 : 0 }}
+            />
+          );
+        })}
       </div>
     </section>
   );
 }
 
-function About() {
+function About({ count }) {
   return (
-    <section className="about wrap" id="about">
-      <motion.div className="manual" {...rise}>
-        <div className="manual-head">
-          <span className="dots"><i /><i /><i /></span>
-          purva.manual — read-only
+    <section className="section wrap about" id="about">
+      <motion.div className="photo-card" {...rise}>
+        <div className="photo-ring">
+          <img src={photo} alt="Portrait of Purva A" />
         </div>
-        <h3>User Manual: Purva v1.0</h3>
-        <dl>
-          {manual.map(([k, v]) => (
-            <div key={k}>
-              <dt>{k}</dt>
-              <dd>{v}</dd>
-            </div>
-          ))}
-        </dl>
-        <div className="manual-mascot"><GhostSticker size={110} /></div>
+        <div className="photo-meta">
+          <b>{profile.name}</b>
+          <span>{profile.location}</span>
+        </div>
+        <div className="photo-links">
+          <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a>
+          <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+          <a href={`mailto:${profile.email}`}>Email</a>
+        </div>
       </motion.div>
-      <div className="whatido">
-        <p className="eyebrow">// where I add value</p>
-        <h2 className="h2">Not just a data role. <span className="hl hl-yellow">A range of them.</span></h2>
-        <div className="wgrid">
-          {whatIDo.map(([tag, title, body], i) => (
-            <motion.div className="wcard" key={title} {...rise} transition={{ ...rise.transition, delay: i * 0.06 }}>
-              <span className="wtag">{String(i + 1).padStart(2, '0')} · {tag}</span>
-              <h4>{title}</h4>
-              <p>{body}</p>
+      <div className="about-copy">
+        <p className="eyebrow">About</p>
+        <h2 className="h2">Data engineering and applied machine learning</h2>
+        {profile.about.map((t) => (
+          <p className="body" key={t}>
+            {t}
+          </p>
+        ))}
+        <div className="stats">
+          {profile.stats.map(([n, l]) => (
+            <motion.div className="stat" key={l} {...rise}>
+              <b>{n}</b>
+              <span>{l}</span>
             </motion.div>
+          ))}
+          <motion.div className="stat" {...rise}>
+            <b>{count}</b>
+            <span>Public projects on GitHub</span>
+          </motion.div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Projects({ projects }) {
+  return (
+    <section className="section" id="projects">
+      <div className="wrap">
+        <div className="head-row">
+          <div>
+            <p className="eyebrow">Projects</p>
+            <h2 className="h2">Selected work from GitHub</h2>
+          </div>
+          <a className="btn btn-ghost" href={`${profile.github}?tab=repositories`} target="_blank" rel="noreferrer">
+            All repositories ↗
+          </a>
+        </div>
+        <div className="pgrid">
+          {projects.map((p, i) => (
+            <GridCard key={p.key} p={p} i={i} />
           ))}
         </div>
       </div>
@@ -127,21 +220,31 @@ function About() {
 
 function Experience() {
   return (
-    <section className="wrap exp" id="experience">
-      <p className="eyebrow">// experience</p>
-      <h2 className="h2">Where the <span className="hl hl-orange">pipelines run.</span></h2>
-      <div className="exp-list">
-        {experience.map((e, i) => (
-          <motion.article className="exp-card" key={e.role} style={{ '--accent': e.color }} {...rise} transition={{ ...rise.transition, delay: i * 0.1 }}>
-            <div className="exp-side">
-              <span className="exp-when">{e.when}</span>
-              <h3>{e.role}</h3>
-              <p className="exp-org">{e.org}</p>
+    <section className="section wrap" id="experience">
+      <p className="eyebrow">Experience</p>
+      <h2 className="h2">Where I have worked</h2>
+      <div className="timeline">
+        {experience.map((e) => (
+          <motion.article className="job" key={e.role} {...rise}>
+            <div className="job-side">
+              <span className="job-when">{e.when}</span>
+              <span className="job-where">{e.where}</span>
             </div>
-            <ul>
-              {e.points.map((p) => <li key={p}>{p}</li>)}
-            </ul>
-            <div className="pcard-tags dark">{e.tags.map((t) => <span key={t}>{t}</span>)}</div>
+            <div className="job-main">
+              <h3>
+                {e.role} <span>· {e.org}</span>
+              </h3>
+              <ul>
+                {e.points.map((p) => (
+                  <li key={p}>{p}</li>
+                ))}
+              </ul>
+              <div className="pc-tags muted">
+                {e.tags.map((t) => (
+                  <span key={t}>{t}</span>
+                ))}
+              </div>
+            </div>
           </motion.article>
         ))}
       </div>
@@ -151,58 +254,65 @@ function Experience() {
 
 function Education() {
   return (
-    <section className="wrap edu" id="education">
-      <div className="edu-col">
-        <p className="eyebrow">// education</p>
-        <h2 className="h2">Foundations <span className="hl hl-purple">& wins.</span></h2>
-        {education.map(([deg, school, meta]) => (
+    <section className="section wrap edu" id="education">
+      <div>
+        <p className="eyebrow">Education</p>
+        <h2 className="h2">Education</h2>
+        {education.map(([deg, school, when, grade]) => (
           <motion.div className="edu-card" key={deg} {...rise}>
             <h4>{deg}</h4>
             <p>{school}</p>
-            <span>{meta}</span>
+            <span>
+              {when} · {grade}
+            </span>
           </motion.div>
         ))}
+        <p className="eyebrow cert-label">Certifications</p>
         <div className="certs">
-          {certifications.map((c) => <span key={c}>{c}</span>)}
+          {certifications.map((c) => (
+            <span key={c}>{c}</span>
+          ))}
         </div>
       </div>
-      <motion.div className="awards" {...rise}>
-        <h3>Awards, patents & papers</h3>
-        <ul>
-          {awards.map(([y, t]) => (
-            <li key={t}><b>{y}</b><span>{t}</span></li>
+      <div>
+        <p className="eyebrow">Recognition</p>
+        <h2 className="h2">Achievements</h2>
+        <ul className="ach">
+          {achievements.map(([type, text, year]) => (
+            <motion.li key={text} {...rise}>
+              <span className="ach-type">{type}</span>
+              <p>{text}</p>
+              <span className="ach-year">{year}</span>
+            </motion.li>
           ))}
         </ul>
-        <div className="awards-star"><StarSticker size={90} /></div>
-      </motion.div>
+      </div>
     </section>
   );
 }
 
 function Contact() {
   return (
-    <section className="contact" id="contact">
-      <div className="scallop scallop-top" />
-      <div className="wrap contact-inner">
-        <motion.div className="peek" initial={{ y: 80 }} whileInView={{ y: 0 }} viewport={{ once: true }} transition={{ type: 'spring', stiffness: 120, damping: 10 }}>
-          <BlobSticker size={150} />
-        </motion.div>
-        <motion.div className="notif" {...rise}>
-          <div className="notif-icon"><BlobSticker size={56} /></div>
-          <div>
-            <div className="notif-top"><b>Purva is open to work</b><span>just now</span></div>
-            <p>SDE, Business Analyst & Product roles — wherever technology meets problems worth solving.</p>
-          </div>
-        </motion.div>
-        <h2 className="h2 dark-ink">Let’s build something <span className="hl hl-ink">worth shipping.</span></h2>
-        <div className="hero-cta center">
-          <a className="btn btn-ink" href={`mailto:${profile.email}`}>{profile.email}</a>
-          <a className="btn btn-outline" href={`tel:${profile.phone.replace(/\s/g, '')}`}>{profile.phone}</a>
+    <section className="section contact" id="contact">
+      <motion.div className="wrap contact-card" {...rise}>
+        <p className="eyebrow">Contact</p>
+        <h2 className="h2">Let’s work together</h2>
+        <p className="body">{profile.openTo}</p>
+        <div className="cta-row center">
+          <a className="btn btn-primary" href={`mailto:${profile.email}`}>
+            {profile.email}
+          </a>
+          <a className="btn btn-ghost" href={`tel:${profile.phone.replace(/\s/g, '')}`}>
+            {profile.phone}
+          </a>
         </div>
-        <p className="locs">{profile.locations.join(' · ')}</p>
-      </div>
-      <footer className="foot">
-        <Sparkle size={16} color="#111" /> Built with React, three.js & a lot of “what if?” · © {new Date().getFullYear()} Purva A
+      </motion.div>
+      <footer className="foot wrap">
+        <span>© {new Date().getFullYear()} {profile.name}</span>
+        <span>
+          <a href={profile.github} target="_blank" rel="noreferrer">GitHub</a> ·{' '}
+          <a href={profile.linkedin} target="_blank" rel="noreferrer">LinkedIn</a>
+        </span>
       </footer>
     </section>
   );
@@ -210,15 +320,16 @@ function Contact() {
 
 export default function App() {
   const [ready, setReady] = useState(false);
+  const projects = useProjects();
   return (
     <>
-      <Intro onDone={() => setReady(true)} />
+      <Loader onDone={() => setReady(true)} />
       <Nav />
       <main>
-        <Hero ready={ready} />
-        <Marquee />
-        <About />
-        <Projects />
+        <Hero ready={ready} featured={projects} />
+        <Stack />
+        <About count={projects.length} />
+        <Projects projects={projects} />
         <Experience />
         <Education />
         <Contact />

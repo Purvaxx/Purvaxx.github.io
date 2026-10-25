@@ -2,10 +2,9 @@
 
 Personal portfolio of Purva A, built with React, three.js (react-three-fiber) and Framer Motion.
 
-- **Intro**: sticker-style mascots pop in, then a scalloped curtain lifts.
-- **Hero**: a 3D mascot that follows your cursor.
+- **Hero**: a 3D grid room with floating shapes (react-three-fiber), camera dolly-in and pointer parallax, plus a fan of featured project cards.
 - **Stack**: two logo marquees scrolling in opposite directions.
-- **Projects**: every public, non-fork repo from github.com/Purvaxx, fetched live, with a snapshot baked in at deploy time as a fallback.
+- **Projects**: every public, non-fork repo from github.com/Purvaxx, fetched live, with a snapshot baked in at deploy time as a fallback. Write-ups for known repos live in `src/data.js` (`projectDetails`).
 
 ## Develop
 
