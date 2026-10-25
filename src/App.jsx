@@ -108,7 +108,7 @@ function Hero({ ready, featured }) {
           <span className="pulse" /> {profile.role}
         </motion.p>
         <h1 className="h1">
-          {['Purva A', profile.title].map((line, i) => (
+          {[profile.name].map((line, i) => (
             <span className="line" key={line}>
               <motion.span
                 initial={{ y: '110%' }}
@@ -121,7 +121,11 @@ function Hero({ ready, featured }) {
           ))}
         </h1>
         <motion.p className="hero-sub" initial={{ opacity: 0 }} animate={ready ? { opacity: 1 } : {}} transition={{ delay: 0.75 }}>
-          {profile.summary}
+          {profile.summary.map((line) => (
+            <span className="hero-line" key={line}>
+              {line}
+            </span>
+          ))}
         </motion.p>
         <motion.div className="cta-row" initial={{ opacity: 0, y: 12 }} animate={ready ? { opacity: 1, y: 0 } : {}} transition={{ delay: 0.9 }}>
           <a className="btn btn-primary" href="#projects">
